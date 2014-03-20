@@ -1,0 +1,58 @@
+html, body{
+    margin:0;
+    padding:0;
+    height:100%;
+    background: rgba(250,250,250,1);
+}
+
+.container{
+    height:100%;
+}
+
+.container .canvas{
+    height:100%;
+}
+
+/*SVG drawing styling*/
+.graticule {
+    fill: none;
+    stroke: #aaa;
+    stroke-width: .5px;
+    stroke-opacity: .5;
+}
+.outline{
+    fill:#DAE6DC;
+    stroke-width:1px;
+    stroke:#222;
+}
+.land {
+    fill: #fff;
+    stroke:#aaa;
+    stroke-width:.5px;
+}
+.countries{
+    fill: none;
+    stroke:#aaa;
+    stroke-width:.5px;
+}
+.routes{
+    fill: none;
+    stroke: #222;
+    stroke-width:.2px;
+    stroke-opacity:0.6;
+}
+
+.airport{
+    fill: #222;
+    /*fill: #f15a29;*/
+    fill-opacity: 0.1;
+}
+.connected{
+    fill: #f15a29;
+    fill-opacity: 0.8;
+}
+.connected:hover{
+    stroke:#222;
+    stroke-width: 1.5px;
+    fill-opacity: 1;
+}
