@@ -92,6 +92,7 @@ h1{
 }
 .center{
     stroke:#fff;
+    stroke-width:2px;
     fill:#222;
     fill-opacity:1;
 }
