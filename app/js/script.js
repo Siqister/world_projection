@@ -40,16 +40,6 @@ var canvas = svg.append('g')
         if(pickedCity){
             changeCity(pickedCity.iata);
         }
-        /*d3.select(this).transition()
-            .duration(1000)
-            .each('start', function(){
-               mouseRange.style('display','none');
-               if(pickedCity) changeCity(pickedCity.iata);
-            })
-            .tween('path', pathTween(projection.rotate(), [ -location[0], -location[1],0 ]))
-            .each('end', function(){
-               mouseRange.style('display',null);
-            });*/
     })
     .on('mousemove',function(){
         var target = d3.select(d3.event.toElement),
@@ -93,6 +83,8 @@ queue()
 
 
 function dataLoaded(err, world, _airports, _routes){
+    $('.container .canvas').removeClass('loading');
+
     routes = _routes;
     airports = _airports;
 

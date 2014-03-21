@@ -7,6 +7,8 @@ html, body{
 body{
     font-family: Helvetica, Arial, sans-serif;
 }
+
+/*Layout*/
 .container{
     height:100%;
     width:100%; !IMPORTANT
@@ -14,6 +16,9 @@ body{
 .container .canvas{
     height:100%;
     width: 80%;
+}
+.container .canvas.loading{
+    background: url('../assets/img/spinner.gif') 50% 50% no-repeat;
 }
 .container .chart{
     position:absolute;
