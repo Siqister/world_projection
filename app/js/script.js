@@ -75,6 +75,18 @@ var mouseRange = canvas.append('circle')
     .attr('cx', width/2)
     .attr('cy', height/2);
 
+var mousePointer = canvas.append('g')
+    .attr('class', 'mouse-pointer')
+    .style('display','none');
+    mousePointer.append('svg:image')
+        .attr('width',15)
+        .attr('height',16)
+        .attr('x',-7.5)
+        .attr('y',-21)
+        .attr('xlink:href','./assets/img/plane-icon.png');
+    mousePointer.append('text')
+        .attr('x',10);
+
 queue()
     .defer(d3.json, './data/world-50m.json')
     .defer(d3.csv, './data/airports.csv')
@@ -239,6 +251,13 @@ function updateMouseRange(mouse){
 
     mouseRange
         .attr('r',r);
+    mousePointer
+        .style('display',null)
+        .attr('transform','translate('+width/2+','+height/2+')rotate('+ a/Math.PI*180 + ')translate(0'+ r +')');
+    mousePointer.select('text')
+        .text(function(){
+            return r/120*6371;
+        });
 }
 
 //factory function for tweening between two projection rotations
