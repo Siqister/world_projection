@@ -163,11 +163,12 @@ function changeCity(_iata){
             canvas.selectAll('.connected,.center')
                 .attr('r',1)
                 .attr('class','airport');
-            pickCity(city.iata);
+
         })
         .tween('path', pathTween(projection.rotate(), [ -city.lng, -city.lat,0 ]))
         .each('end', function(){
             mouseRange.style('display',null);
+            pickCity(city.iata);
         });
 }
 
