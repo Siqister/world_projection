@@ -5,6 +5,8 @@ var margin = {t: 50, r: 50, b: 50, l: 50},
     width = $('.canvas').innerWidth() - margin.l - margin.r,
     height = $('.canvas').innerHeight() - margin.t - margin.b;
 
+var format = d3.format('.0f');
+
 var projection = d3.geo.azimuthalEquidistant()
     .scale(120)
     .translate([width/2, height/2])
@@ -33,7 +35,6 @@ var canvas = svg.append('g')
         //location --> location of mouse click
         //if mouse click is on a connected airport, center map on the new airport
         var target = d3.select(d3.event.toElement),
-            location = projection.invert(d3.mouse(this)),
             pickedCity = target.classed('connected')? target.datum():null;
         d3.event.stopPropagation();
 
@@ -57,7 +58,6 @@ var canvas = svg.append('g')
                 'left':'-9999px'
             });
         }
-
         //update mouseRange
         updateMouseRange(d3.mouse(this));
     });
@@ -77,7 +77,10 @@ var mouseRange = canvas.append('circle')
 
 var mousePointer = canvas.append('g')
     .attr('class', 'mouse-pointer')
-    .style('display','none');
+    .style('display','none')
+    .on('mouseover',function(){
+       d3.event.stopPropagation();
+    });
     mousePointer.append('svg:image')
         .attr('width',15)
         .attr('height',16)
@@ -85,7 +88,9 @@ var mousePointer = canvas.append('g')
         .attr('y',-21)
         .attr('xlink:href','./assets/img/plane-icon.png');
     mousePointer.append('text')
-        .attr('x',10);
+        .attr('text-anchor','end')
+        .attr('x',-10)
+        .attr('y',-5);
 
 queue()
     .defer(d3.json, './data/world-50m.json')
@@ -255,8 +260,14 @@ function updateMouseRange(mouse){
         .style('display',null)
         .attr('transform','translate('+width/2+','+height/2+')rotate('+ a/Math.PI*180 + ')translate(0'+ r +')');
     mousePointer.select('text')
+        .attr('text-anchor',function(){
+            return r/120*6371 < 12000? 'start':'end';
+        })
+        .attr('x',function(){
+            return r/120*6371 < 12000? 10:-10;
+        })
         .text(function(){
-            return r/120*6371;
+            return format(r/120*6371)+'km';
         });
 }
 
