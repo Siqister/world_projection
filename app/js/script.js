@@ -1,5 +1,4 @@
 //bootstrap
-var currentCity = "BOS";
 var routes, airports;
 
 var margin = {t: 50, r: 50, b: 50, l: 50},
@@ -8,7 +7,7 @@ var margin = {t: 50, r: 50, b: 50, l: 50},
 
 var projection = d3.geo.azimuthalEquidistant()
     .scale(120)
-    .translate([width / 2, height / 2])
+    .translate([width/2, height/2])
     .rotate([71, -42.358431, 0])
     .clipAngle(180 - 1e-3)
     .precision(.1);
@@ -18,6 +17,11 @@ var path = d3.geo.path()
 
 var graticule = d3.geo.graticule();
 
+var tooltipTemplate = _.template('<%= name %> (<%= iata %>)<br /><span><%= city%>, <%= country%></span>');
+
+
+//Start drawing
+
 var svg = d3.select('.canvas').append('svg')
     .attr('width', width + margin.l + margin.r)
     .attr('height', height + margin.t + margin.b);
@@ -26,12 +30,52 @@ var canvas = svg.append('g')
     .attr('class', 'canvas')
     .attr('transform', 'translate(' + margin.l + ',' + margin.t + ')')
     .on('click', function () {
-        var location = projection.invert(d3.mouse(this));
+        //location --> location of mouse click
+        //if mouse click is on a connected airport, center map on the new airport
+        var target = d3.select(d3.event.toElement),
+            location = projection.invert(d3.mouse(this)),
+            pickedCity = target.classed('connected')? target.datum():null;
         d3.event.stopPropagation();
 
         d3.select(this).transition()
-            .duration(2000)
-            .tween('path', pathTween(projection.rotate(), [ -location[0], -location[1],0 ]));
+            .duration(1000)
+            .each('start', function(){
+               mouseRange.style('display','none');
+               if(pickedCity){
+                   canvas.selectAll('.routes').remove();
+                   canvas.selectAll('.connected,.center')
+                       .attr('r',1)
+                       .attr('class','airport');
+                   target
+                       .attr('class','airport center')
+                       .attr('r',6);
+               }
+            })
+            .tween('path', pathTween(projection.rotate(), [ -location[0], -location[1],0 ]))
+            .each('end', function(){
+               mouseRange.style('display',null);
+               if(pickedCity) pickCity( pickedCity.iata );
+            });
+    })
+    .on('mousemove',function(){
+        var target = d3.select(d3.event.toElement),
+            pickedCity = target.classed('connected')||target.classed('center')? target.datum():null;
+
+        //if mousemove target is a highlighted airport, show tooltip
+        if(pickedCity){
+            $('.custom-tooltip').css({
+                'left':d3.event.x + 10 + 'px',
+                'top':d3.event.y + 10 + 'px'
+            });
+            $('.custom-tooltip').html(tooltipTemplate(pickedCity));
+        }else{
+            $('.custom-tooltip').css({
+                'left':'-9999px'
+            });
+        }
+
+        //update mouseRange
+        updateMouseRange(d3.mouse(this));
     });
 
 canvas.append('path')
@@ -41,6 +85,11 @@ canvas.append('path')
 canvas.append('path')
     .datum(graticule)
     .attr('class', 'graticule');
+
+var mouseRange = canvas.append('circle')
+    .attr('class', 'range mouse-range')
+    .attr('cx', width/2)
+    .attr('cy', height/2);
 
 queue()
     .defer(d3.json, './data/world-50m.json')
@@ -63,7 +112,7 @@ function dataLoaded(err, world, _airports, _routes){
         }))
         .attr('class', 'countries');
 
-    canvas.insert('g', '.graticule')
+    canvas.append('g')
         .attr('class','airports')
         .selectAll('.airport')
         .data(airports)
@@ -72,9 +121,9 @@ function dataLoaded(err, world, _airports, _routes){
         .attr('class','airport')
         .attr('r',1);
 
-    redraw();
 
-    pickCity(currentCity);
+    redraw();
+    pickCity("BOS");
 }
 
 function redraw() {
@@ -110,7 +159,7 @@ function pickCity(city){
         .filter(function(d){
             return _.contains(cities, d.iata);
         })
-        .attr('r',2.5)
+        .attr('r',3.5)
         .attr('class','airport connected');
 
     //turn route_w_city to GeoJSON feature collection
@@ -130,13 +179,29 @@ function pickCity(city){
        };
     });
 
-    //draw route path
-    canvas.selectAll('.routes').transition().remove();
-    canvas.insert('path','.airports')
+    //draw route path for the first time
+    var route_paths = canvas.insert('path','.airports')
         .attr('class','routes')
         .datum(geo)
         .attr('d',path);
+    var totalLength = route_paths.node().getTotalLength();
+    route_paths
+        .attr('stroke-dasharray', totalLength + " " + totalLength)
+        .attr('stroke-dashoffset', totalLength)
+        .transition()
+        .duration(5000)
+        .attr('stroke-dashoffset',0);
 };
+
+function updateMouseRange(mouse){
+    var dx = mouse[0]-width/ 2,
+        dy = mouse[1]-height/ 2,
+        a = Math.atan2(dy,dx),
+        r = Math.sqrt(dx*dx + dy*dy);
+
+    mouseRange
+        .attr('r',r);
+}
 
 //factory function for tweening between two projection rotations
 function pathTween(rotation0, rotation1) {

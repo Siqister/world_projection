@@ -3,24 +3,35 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" href="css/style.css" />
     <title>Workspace</title>
 </head>
 <body>
     <div class="container">
-        <div class="tooltip"></div>
-        <div class="control">
-        </div>
         <div class="canvas"></div>
+        <div class="chart"></div>
+        <div class="control">
+            <h1>Where Are You Flying From?</h1>
+            <div class="input-group">
+                <span class="input-group-addon">City or Airport</span>
+                <input type="text" class="form-control" placeholder="ex:'BOS' or 'Boston'">
+            </div>
+        </div>
+        <div class="custom-tooltip"></div>
     </div>
 </body>
 
 <!--Scripts-->
+<!--Lib-->
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
 <script src="http://d3js.org/queue.v1.min.js"></script>
 <script src="js/app/lib/jquery/jquery-1.11.0.min.js"></script>
+<script src="js/app/lib/bootstrap/bootstrap.min.js"></script>
 <script src="js/app/lib/underscore/underscore-min.js"></script>
+
+<!--Script-->
 <script src="js/script.js"></script>
 
 </html>
