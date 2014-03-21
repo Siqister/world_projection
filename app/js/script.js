@@ -121,8 +121,18 @@ function dataLoaded(err, world, _airports, _routes){
         .attr('class','airport')
         .attr('r',1);
 
-
     redraw();
+
+    //autocomplete and city picking
+    $('.control .input-group input').autocomplete({
+       source: _.map(airports,function(_a){
+           return {
+             'value': _a.iata,
+             'label': _a.name + ',' + _a.city + ' (' + _a.iata + ')'
+           };
+       })
+    });
+
     pickCity("BOS");
 }
 
