@@ -37,25 +37,19 @@ var canvas = svg.append('g')
             pickedCity = target.classed('connected')? target.datum():null;
         d3.event.stopPropagation();
 
-        d3.select(this).transition()
+        if(pickedCity){
+            changeCity(pickedCity.iata);
+        }
+        /*d3.select(this).transition()
             .duration(1000)
             .each('start', function(){
                mouseRange.style('display','none');
-               if(pickedCity){
-                   canvas.selectAll('.routes').remove();
-                   canvas.selectAll('.connected,.center')
-                       .attr('r',1)
-                       .attr('class','airport');
-                   target
-                       .attr('class','airport center')
-                       .attr('r',6);
-               }
+               if(pickedCity) changeCity(pickedCity.iata);
             })
             .tween('path', pathTween(projection.rotate(), [ -location[0], -location[1],0 ]))
             .each('end', function(){
                mouseRange.style('display',null);
-               if(pickedCity) pickCity( pickedCity.iata );
-            });
+            });*/
     })
     .on('mousemove',function(){
         var target = d3.select(d3.event.toElement),
@@ -130,7 +124,13 @@ function dataLoaded(err, world, _airports, _routes){
              'value': _a.iata,
              'label': _a.name + ',' + _a.city + ' (' + _a.iata + ')'
            };
-       })
+       }),
+       select: function(e,ui){
+           changeCity(ui.item.value);
+       }
+    });
+    $(document).on('change','.control .input-group input',function(e){
+       changeCity($(this).val());
     });
 
     pickCity("BOS");
@@ -145,7 +145,35 @@ function redraw() {
         .attr('cy', function(d){ return (projection([d.lng, d.lat]))[1]; });
 }
 
+function changeCity(_iata){
+    //city --> iata code
+    var city = _.findWhere(airports,{'iata':_iata});
+
+    //validate city
+    if(!city){
+        alert("city doesn't exist");
+        return;
+    }
+
+    canvas.transition()
+        .duration(1000)
+        .each('start', function(){
+            mouseRange.style('display','none');
+            canvas.selectAll('.routes').remove();
+            canvas.selectAll('.connected,.center')
+                .attr('r',1)
+                .attr('class','airport');
+            pickCity(city.iata);
+        })
+        .tween('path', pathTween(projection.rotate(), [ -city.lng, -city.lat,0 ]))
+        .each('end', function(){
+            mouseRange.style('display',null);
+        });
+}
+
 function pickCity(city){
+    //finds connected cities and routes, draw them accordingly
+    //DOES NOT center globe; DOES NOT clear connected airports or possible routes
     var cities = [],
         route_w_city = [],
         geo = {
@@ -165,12 +193,19 @@ function pickCity(city){
         }
     });
 
+    cities.push(city);
+
     canvas.selectAll('.airport')
         .filter(function(d){
             return _.contains(cities, d.iata);
         })
         .attr('r',3.5)
-        .attr('class','airport connected');
+        .attr('class','airport connected')
+        .filter(function(d){
+            return d.iata === city;
+        })
+        .attr('r',6)
+        .attr('class','airport center');
 
     //turn route_w_city to GeoJSON feature collection
     route_w_city.forEach(function(r){
