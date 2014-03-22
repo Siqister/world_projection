@@ -331,36 +331,38 @@ define([
                     dest = _.findWhere(airports,{"iata":destIata});
                 var originXY = projection([origin.lng,origin.lat]),
                     destXY = projection([dest.lng,dest.lat]);
-                canvas.selectAll('.connected')
-                    .filter(function(d){
-                        return d.iata === destIata;
-                    })
-                    .transition()
-                    .style('fill','#03afeb')
-                    .attr('r',6)
-                    .attr('class','airport connected hover');
+                var hoverAirport = canvas.selectAll('.hover-airport')
+                    .data([destXY]);
 
-                var hoverRoute = canvas.insert('line','.airports')
-                    .attr('class','hover-route')
-                    .attr('x1',originXY[0])
-                    .attr('y1',originXY[1])
-                    .attr('x2',destXY[0])
-                    .attr('y2',destXY[1]);
-                var totalLength = hoverRoute.node().getTotalLength();
-                hoverRoute
-                    .attr('stroke-dasharray', totalLength + " " + totalLength)
-                    .attr('stroke-dashoffset', totalLength)
+                var hoverRoute = canvas.selectAll('.hover-route')
+                    .data([{origin:originXY, dest:destXY}]);
+
+                hoverRoute.enter().append('line')
+                    .attr('class','hover-route');
+
+                hoverAirport.enter().append('circle')
+                    .attr('class','hover-airport')
+                    .attr('r',0)
+                    .style('fill','#03afeb')
+                    .style('stroke','#fff')
+                    .style('stroke-width','2px');
+
+                hoverAirport
+                    .attr('cx',function(d){ return d[0];})
+                    .attr('cy',function(d){ return d[1];})
                     .transition()
-                    .duration(1500)
-                    .attr('stroke-dashoffset',0);
+                    .attr('r',6);
+
+                hoverRoute
+                    .attr('x1',function(d){ return d.origin[0];})
+                    .attr('y1',function(d){ return d.origin[1];})
+                    .attr('x2',function(d){ return d.dest[0];})
+                    .attr('y2',function(d){ return d.dest[1];});
             };
 
             function routeOut(){
-                canvas.selectAll('.hover')
-                    .transition()
-                    .style('fill',null)
-                    .attr('r',3.5)
-                    .attr('class','airport connected');
+                canvas.selectAll('.hover-airport')
+                    .remove();
 
                 canvas.selectAll('.hover-route')
                     .remove();

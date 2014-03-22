@@ -61,7 +61,8 @@ define([
                var destIata = $(this).find('.dest-iata').attr("id");
                vent.trigger("route:hover", that.data.iata, destIata);
 
-           }).on('mouseleave', function(e){
+           })
+           this.$('table').on('mouseleave', function(e){
                vent.trigger("route:out");
            });
        }

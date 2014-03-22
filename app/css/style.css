@@ -41,6 +41,10 @@ body{
     padding: 50px 0 0 20px;
 }
 .col-left .route-chart{
+    position:absolute;
+    top: 200px;
+    bottom:0;
+    overflow:scroll;
 }
 .col-left .control{
 }
