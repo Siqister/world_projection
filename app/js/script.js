@@ -164,20 +164,21 @@ function changeCity(_iata){
         return;
     }
 
+    canvas.selectAll('.routes').remove();
+    canvas.selectAll('.connected,.center')
+        .attr('r',1)
+        .attr('class','airport');
+    pickCity(city.iata);
+
     canvas.transition()
         .duration(1000)
+        .delay(500)
         .each('start', function(){
             mouseRange.style('display','none');
-            canvas.selectAll('.routes').remove();
-            canvas.selectAll('.connected,.center')
-                .attr('r',1)
-                .attr('class','airport');
-
         })
         .tween('path', pathTween(projection.rotate(), [ -city.lng, -city.lat,0 ]))
         .each('end', function(){
             mouseRange.style('display',null);
-            pickCity(city.iata);
         });
 }
 
@@ -244,7 +245,7 @@ function pickCity(city){
         .attr('stroke-dasharray', totalLength + " " + totalLength)
         .attr('stroke-dashoffset', totalLength)
         .transition()
-        .duration(5000)
+        .duration(1500)
         .attr('stroke-dashoffset',0);
 };
 
