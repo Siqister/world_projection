@@ -9,31 +9,53 @@
     <title>Workspace</title>
 </head>
 <body>
-    <div class="container">
-        <div class="canvas loading"></div>
-        <div class="chart"></div>
+<div class="container">
+    <div class="canvas loading"></div>
+    <div class="plane-chart"></div>
+
+    <div class="col-left">
         <div class="control">
-            <h1>Where Are You Flying From?</h1>
+            <h1>Flying From?</h1>
             <div class="input-group">
                 <span class="input-group-addon">City or Airport</span>
                 <input type="text" class="form-control" placeholder="e.g. 'BOS' or 'Boston'">
             </div>
         </div>
-        <div class="custom-tooltip"></div>
+
+        <div class="route-chart"></div>
     </div>
+
+    <div class="custom-tooltip"></div>
+</div>
 </body>
 
-<!--Scripts-->
-<!--Lib-->
-<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-<script src="http://d3js.org/topojson.v1.min.js"></script>
-<script src="http://d3js.org/queue.v1.min.js"></script>
-<script src="js/app/lib/jquery/jquery-1.11.0.min.js"></script>
-<script src="js/app/lib/jquery-ui/jquery-ui-1.10.4.custom.min.js"></script>
-<script src="js/app/lib/bootstrap/bootstrap.min.js"></script>
-<script src="js/app/lib/underscore/underscore-min.js"></script>
+<!--templates-->
+<script id="summary-template" type="text/html">
+    <h2>
+        <%= name %> (<%= iata %>)
+        <span class="meta"><%=city%>, <%=country%></span>
+    </h2>
+</script>
 
-<!--Script-->
-<script src="js/script.js"></script>
+<script id="table-template" type="text/html">
+    <table class="table table-condensed table-hover">
+        <tr>
+            <th>Destination</th>
+            <th>Distance</th>
+        </tr>
+        <% _.each(routes, function(route){%>
+            <tr>
+                <td id="<%= route.dest %>" class="dest-iata"><%= route.dest %>
+                    <span class="meta"><%= route.destCity %></span>
+                    <span class="meta">Operated by <%= route.airline %> using <%= route.equipment %></span>
+                </td>
+                <td><%= route.distString %></td>
+            </tr>
+        <%}); %>
+    </table>
+</script>
+
+<!--Scripts-->
+<script type="text/javascript" src="js/require.js" data-main="js/bootstrap.js"></script>
 
 </html>
