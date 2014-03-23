@@ -7,7 +7,8 @@ define([
     'vent',
 
     'app/views/globe',
-    'app/views/routeChart'
+    'app/views/routeChart',
+    'app/views/planeChart'
 ], function(
     $,
     _,
@@ -17,7 +18,8 @@ define([
     vent,
 
     globeView,
-    RouteChartView
+    RouteChartView,
+    PlaneChartView
     ){
 
     var app = new Marionette.Application();
@@ -38,7 +40,10 @@ define([
            "city": city
         });
 
+        var planeChartView = new PlaneChartView();
+
         app.routeChart.show(routeChartView);
+        app.plane_chart.show(planeChartView);
     });
 
     return app;

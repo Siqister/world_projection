@@ -44,10 +44,13 @@
             <th>Distance</th>
         </tr>
         <% _.each(routes, function(route){%>
-            <tr>
-                <td id="<%= route.dest %>" class="dest-iata"><%= route.dest %>
+            <tr id="<%= route.dest %>" class="dest-iata">
+                <td><%= route.dest %>
                     <span class="meta"><%= route.destCity %></span>
-                    <span class="meta">Operated by <%= route.airline %> using <%= route.equipment %></span>
+                    <span class="meta">Operated by <%= route.airline %> using <% _.each(route.equipment, function(eq){ %>
+                        <span class="label label-default"><%= eq %></span>
+                    <% }); %>
+                    </span>
                 </td>
                 <td><%= route.distString %></td>
             </tr>

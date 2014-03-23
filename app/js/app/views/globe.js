@@ -83,6 +83,8 @@ define([
                             'top':d3.event.y + 10 + 'px'
                         });
                         $('.custom-tooltip').html(tooltipTemplate(pickedCity));
+
+                        vent.trigger('airport:hover', pickedCity.iata);
                     }else{
                         $('.custom-tooltip').css({
                             'left':'-9999px'
@@ -90,6 +92,9 @@ define([
                     }
                     //update mouseRange
                     updateMouseRange(d3.mouse(this));
+                })
+                .on('mouseout',function(){
+                   vent.trigger('airport:out');
                 });
 
             canvas.append('path')
@@ -124,8 +129,25 @@ define([
 
             queue()
                 .defer(d3.json, './data/world-50m.json')
-                .defer(d3.csv, './data/airports.csv')
-                .defer(d3.csv, './data/routes.csv')
+                .defer(d3.csv, './data/airports.csv', function(d){
+                    return{
+                        name: d.name,
+                        city: d.city,
+                        country: d.country,
+                        iata: d.iata,
+                        lng: d.lng,
+                        lat: d.lat,
+                        loc: [d.lng, d.lat]
+                    }
+                })
+                .defer(d3.csv, './data/routes.csv', function(d){
+                    return{
+                        airline: d.airline,
+                        origin: d.origin,
+                        dest: d.dest,
+                        equipment: d.equipment.split(" ")
+                    }
+                })
                 .await(dataLoaded);
 
 
@@ -146,13 +168,7 @@ define([
                     .attr('class', 'countries');
 
                 canvas.append('g')
-                    .attr('class','airports')
-                    .selectAll('.airport')
-                    .data(airports)
-                    .enter()
-                    .append('circle')
-                    .attr('class','airport')
-                    .attr('r',1);
+                    .attr('class','airports');
 
                 redraw();
 
@@ -186,6 +202,7 @@ define([
 
             function changeCity(_iata){
                 //city --> iata code
+                console.log("changing to: " + _iata);
                 var city = _.findWhere(airports,{'iata':_iata});
 
                 //validate city
@@ -194,10 +211,8 @@ define([
                     return;
                 }
 
+                //code for actually drawing the routes and nodes
                 canvas.selectAll('.routes').remove();
-                canvas.selectAll('.connected,.center')
-                    .attr('r',1)
-                    .attr('class','airport');
                 pickCity(city.iata);
 
                 canvas.transition()
@@ -212,10 +227,11 @@ define([
                     });
             }
 
-            function pickCity(city){
+            function pickCity(center){
                 //finds connected cities and routes, draw them accordingly
                 //DOES NOT center globe; DOES NOT clear connected airports or possible routes
-                var cities = [],
+                var cities = [], //array of iata codes for connected airports
+                    citiesData = [], //array of full data for connected airports
                     route_w_city = [],
                     geo = {
                         type:'FeatureCollection',
@@ -223,10 +239,10 @@ define([
                     };
 
                 route_w_city = routes.filter(function(r){
-                    if(r.origin === city){
+                    if(r.origin === center){
                         cities.push(r.dest);
                         return true;
-                    }else if(r.dest === city){
+                    }else if(r.dest === center){
                         cities.push(r.origin);
                         return true;
                     }else{
@@ -234,24 +250,17 @@ define([
                     }
                 });
 
-                cities.push(city);
-
-                canvas.selectAll('.airport')
-                    .filter(function(d){
-                        return _.contains(cities, d.iata);
-                    })
-                    .attr('r',3.5)
-                    .attr('class','airport connected')
-                    .filter(function(d){
-                        return d.iata === city;
-                    })
-                    .attr('r',6)
-                    .attr('class','airport center');
+                cities.push(center);
+                cities = _.uniq(cities);
+                cities.forEach(function(c){
+                    var cityData = _.findWhere(airports,{"iata":c});
+                    if(cityData) citiesData.push( cityData );
+                });
 
                 //turn route_w_city to GeoJSON feature collection
                 route_w_city.forEach(function(r){
-                    var origin = _.findWhere(airports, {"iata" : r.origin}),
-                        dest = _.findWhere(airports, {"iata" : r.dest});
+                    var origin = _.findWhere(citiesData, {"iata" : r.origin}),
+                        dest = _.findWhere(citiesData, {"iata" : r.dest});
 
                     if(origin && dest){
                         geo.features.push({
@@ -264,6 +273,28 @@ define([
                         });
                     };
                 });
+
+                //enter, update, exit for airports
+                var airportGroup = canvas.select('.airports');
+                var airportCircle = airportGroup.selectAll('.airport')
+                    .data(citiesData, function(d){ return d.iata; });
+
+                airportCircle.enter()
+                    .append('circle')
+                    .attr('r',0);
+
+                airportCircle
+                    .attr('class','airport connected')
+                    .attr('cx', function(d){ return (projection([d.lng, d.lat]))[0]; })
+                    .attr('cy', function(d){ return (projection([d.lng, d.lat]))[1]; })
+                    .attr('r',3.5)
+                    .filter(function(d){
+                        return d.iata === center;
+                    })
+                    .attr('class','airport center')
+                    .attr('r',6);
+
+                airportCircle.exit().remove();
 
                 //draw route path for the first time
                 var route_paths = canvas.insert('path','.airports')
@@ -279,7 +310,7 @@ define([
                     .attr('stroke-dashoffset',0);
 
                 //Announce routes to other modules
-                vent.trigger('city:picked', route_w_city, airports, city);
+                vent.trigger('city:picked', route_w_city, airports, center);
 
             };
 
@@ -331,27 +362,23 @@ define([
                     dest = _.findWhere(airports,{"iata":destIata});
                 var originXY = projection([origin.lng,origin.lat]),
                     destXY = projection([dest.lng,dest.lat]);
-                var hoverAirport = canvas.selectAll('.hover-airport')
-                    .data([destXY]);
+
+                canvas.selectAll('.hover')
+                    .attr('class','airport connected')
+                    .transition()
+                    .attr('r',3.5);
+
+                var hoverAirport = canvas.selectAll('.connected')
+                    .filter(function(d){ return d.iata === destIata; })
+                    .attr('class','airport connected hover')
+                    .transition()
+                    .attr('r',6);
 
                 var hoverRoute = canvas.selectAll('.hover-route')
                     .data([{origin:originXY, dest:destXY}]);
 
-                hoverRoute.enter().append('line')
+                hoverRoute.enter().insert('line','.airports')
                     .attr('class','hover-route');
-
-                hoverAirport.enter().append('circle')
-                    .attr('class','hover-airport')
-                    .attr('r',0)
-                    .style('fill','#03afeb')
-                    .style('stroke','#fff')
-                    .style('stroke-width','2px');
-
-                hoverAirport
-                    .attr('cx',function(d){ return d[0];})
-                    .attr('cy',function(d){ return d[1];})
-                    .transition()
-                    .attr('r',6);
 
                 hoverRoute
                     .attr('x1',function(d){ return d.origin[0];})
@@ -361,8 +388,10 @@ define([
             };
 
             function routeOut(){
-                canvas.selectAll('.hover-airport')
-                    .remove();
+                canvas.selectAll('.hover')
+                    .attr('class','airport connected')
+                    .transition()
+                    .attr('r',3.5);
 
                 canvas.selectAll('.hover-route')
                     .remove();

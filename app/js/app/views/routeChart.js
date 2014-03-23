@@ -58,14 +58,48 @@ define([
            //bind events directly to <tr>
            this.$('table tr').on('mouseenter',function(e){
                e.stopPropagation();
-               var destIata = $(this).find('.dest-iata').attr("id");
+               var destIata = $(this).attr("id");
                vent.trigger("route:hover", that.data.iata, destIata);
 
            })
            this.$('table').on('mouseleave', function(e){
                vent.trigger("route:out");
            });
+       },
+       onShow: function(){
+           var that = this,
+               airportHover = null;
+
+           vent.off("airport:hover")
+               .on("airport:hover", function(destIata){
+                   if(airportHover !== destIata){
+                       airportHover = destIata;
+
+                       var $highlight = that.$('table').find('#'+destIata).first();
+
+                       that.scrollTo($highlight.offset().top - that.$el.offset().top);
+                       $highlight.addClass('airport-hover');
+
+                   }else{
+                       return;
+                   }
+               });
+
+           vent.off("airport:out")
+               .on("airport:out", function(){
+                   that.$('tr').removeClass('airport-hover');
+               });
+       },
+       scrollTo: function(offset){
+           var that = this;
+           //not really legal
+           $('.route-chart')
+               .stop()
+               .animate({
+                    scrollTop: offset
+               });
        }
+
     });
 
     return RouteChartView;

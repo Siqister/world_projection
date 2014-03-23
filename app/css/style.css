@@ -58,7 +58,7 @@ h2{
     font-size: 1.35em;
 }
 span.meta{
-    font-size: 0.7em;
+    font-size: 0.8em;
     display:block;
 }
 
@@ -67,7 +67,7 @@ span.meta{
     position: absolute;
     top: -9999px;
     padding: 5px 8px;
-    background: #000;
+    background: #222;
     color: #fff;
     font-weight:bold;
 }
@@ -121,9 +121,10 @@ span.meta{
     fill-opacity: 0.8;
 }
 .connected:hover{
-    stroke:#222;
+    stroke:#fff;
     stroke-width: 1.5px;
     fill-opacity: 1;
+    fill: #03afeb;
 }
 .center{
     stroke:#fff;
@@ -131,10 +132,49 @@ span.meta{
     fill:#222;
     fill-opacity:1;
 }
+.hover{
+    fill: #03afeb;
+    stroke: #fff;
+    stroke-width: 2px;
+}
 
 .mouse-range{
     fill-opacity:0.05;
     stroke:#000;
     stroke-width:.5px;
     stroke-dasharray:3,2;
+}
+
+/* override default bootstrap table */
+.table-hover>tbody>tr:hover>td,
+.table-hover>tbody>tr.airport-hover>td{
+    color: #03afeb; !IMPORTANT
+    font-weight:bold; !IMPORTANT
+    background-color: (250,250,250,0.6); !IMPORTANT
+}
+.table-hover>tbody>tr:hover>td .label-default,
+.table-hover>tbody>tr.airport-hover>td .label-default{
+    background-color: #03afeb; !important
+}
+
+/*plane-chart*/
+.plane-chart-inner{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+}
+.range-tick line{
+    fill:none;
+    stroke:#666;
+    stroke-width:0.5;
+}
+.range-tick.minor line{
+    stroke-opacity:0.5;
+}
+.range-tick.minor text{
+    font-size:9px;
+}
+.range-tick.major text{
+    font-size:12px;
 }
