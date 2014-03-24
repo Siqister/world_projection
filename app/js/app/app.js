@@ -33,17 +33,17 @@ define([
 
     app.canvas.show(globeView);
 
+    var planeChartView = new PlaneChartView();
+    app.plane_chart.show(planeChartView);
+
+
     vent.on('city:picked', function(routes,airports,city){
         var routeChartView = new RouteChartView({
            "routes":routes,
            "airports":airports,
            "city": city
         });
-
-        var planeChartView = new PlaneChartView();
-
         app.routeChart.show(routeChartView);
-        app.plane_chart.show(planeChartView);
     });
 
     return app;
