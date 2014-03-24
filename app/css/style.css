@@ -180,6 +180,7 @@ span.meta{
 }
 
 .model circle{
+    fill:#ddd;
     stroke:#fff;
     stroke-width:1.5px;
 }
