@@ -23,7 +23,11 @@ define([
        className:'route-chart-inner',
        initialize: function(options){
            //perform summary calculations
+           var that = this;
+
            this.data = {};
+           this.summary = {};
+
            this.data.iata = options.city;
            this.data.city = _.findWhere(options.airports, {"iata":options.city});
            this.data.airports = options.airports; //list of all airports
@@ -43,12 +47,15 @@ define([
               var distanceRad = d3.geo.distance([originCity.lng, originCity.lat],[destCity.lng,destCity.lat]);
 
               _r.destCity = destCity.city + ', ' + destCity.country;
+              _r.destFullData = destCity;
               _r.distance = distanceRad * 6371;
               _r.distString = format(_r.distance) + "km";
            })
            this.data.routes.sort(function(a,b){
               return b.distance - a.distance;
            });
+
+           var destCityData = _.pluck(that.data.routes,'destFullData');
        },
        render: function(){
            var that = this;

@@ -12,10 +12,14 @@ require.config({
         'queue':'app/lib/queue/queue.v1.min',
         'topojson':'app/lib/topojson/topojson.v1.min',
 
-        'vent':'app/vent'
+        'vent':'app/vent',
+        'bootstrap-modal':'app/lib/bootstrap/modal'
     },
     shim:{
-        'jquery-ui':['jquery']
+        'jquery-ui':['jquery'],
+        'bootstrap-modal':{
+            deps:['jquery']
+        }
     }
 });
 

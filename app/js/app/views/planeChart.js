@@ -227,6 +227,7 @@ define([
                     .attr('text-anchor','middle')
                     .attr('class','meta')
                     .attr('y',-15);
+
             }
 
             function onMouseMove(){

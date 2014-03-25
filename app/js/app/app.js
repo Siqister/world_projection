@@ -8,7 +8,9 @@ define([
 
     'app/views/globe',
     'app/views/routeChart',
-    'app/views/planeChart'
+    'app/views/planeChart',
+
+    'bootstrap-modal'
 ], function(
     $,
     _,
@@ -23,6 +25,9 @@ define([
     ){
 
     var app = new Marionette.Application();
+
+    //TODO:
+    var init = false;
 
     app.addRegions({
         "routeChart":'.route-chart',
@@ -44,6 +49,13 @@ define([
            "city": city
         });
         app.routeChart.show(routeChartView);
+
+        if(init === false){
+            //call up modal
+            $('.modal').modal('show');
+
+            init = true;
+        }
     });
 
     return app;

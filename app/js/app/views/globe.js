@@ -303,7 +303,8 @@ define([
                         return d.iata === center;
                     })
                     .attr('class','airport center')
-                    .attr('r',6);
+                    .attr('r',6)
+                    .style('fill',null);
 
                 airportCircle.exit().remove();
 
@@ -406,6 +407,7 @@ define([
                     })
                     .attr('class','airport connected hover')
                     .transition()
+                    .duration(50)
                     .style('fill', highlightColor)
                     .attr('r',6);
 
@@ -435,7 +437,6 @@ define([
             }
 
             function onAircraftHover(model){
-                console.log(model);
                 mouseRange
                     .style('stroke','#EE2962')
                     .style('fill','#EE2962');
@@ -452,7 +453,6 @@ define([
                 });
 
                 routesHighlight(dests, "aircraft");
-
             }
 
             function onAircraftOut(){
