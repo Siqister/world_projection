@@ -222,6 +222,7 @@ define([
                 }
 
                 //code for actually drawing the routes and nodes
+
                 canvas.selectAll('.routes').remove();
                 pickCity(city.iata);
 
@@ -322,8 +323,8 @@ define([
                 //Announce routes to other modules
                 vent.trigger('city:picked', route_w_city, airports, center);
 
+                //TODO
                 routeOut();
-
             };
 
             function onMouseMove(mouse){
