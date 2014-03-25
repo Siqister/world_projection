@@ -178,14 +178,16 @@ span.meta{
 .range-tick.major text{
     font-size:12px;
 }
+.range-line rect{
+    fill-opacity:0.05;
+}
 
 .model circle{
     fill:#ddd;
-    stroke:#fff;
-    stroke-width:1.5px;
+    fill-opacity:0.2;
 }
-.model circle{
-    stroke-width:3px;
+.model:hover circle{
+    fill:#EE2962;
 }
 .model .pax-range{
     stroke-width:3px;

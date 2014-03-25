@@ -24,7 +24,8 @@ define([
         height,
         svg;
 
-    var aircrafts;
+    var aircrafts,
+        aircraftsUsed;
 
     var distScale = d3.scale.linear().domain([0,18000]),
         paxScale = d3.scale.linear().domain([50,550]),
@@ -86,6 +87,11 @@ define([
 
             var rangeLine = svg.append('g')
                 .attr('class','range-line');
+            rangeLine.append('rect')
+                .attr('x',0)
+                .attr('y',0)
+                .attr('width',width)
+                .attr('height',height);
             rangeLine.append('line')
                 .attr('x1',0)
                 .attr('y1',0)
@@ -93,9 +99,8 @@ define([
                 .attr('y2',0)
                 .attr('class','mouse-range');
 
-            svg.on('mousemove',function(){
-                console.log('mousemove');
-            })
+
+            svg.on('mousemove', onMouseMove);
 
             vent.off('mouseRange:change')
                 .on('mouseRange:change',updateRange);
@@ -120,6 +125,8 @@ define([
                 aircrafts = _aircrafts;
 
                 drawChart();
+
+                vent.on("city:picked",onCityPicked);
             }
 
             function drawChart(){
@@ -129,21 +136,35 @@ define([
                 var aircraftNodeEnter = aircraftNode
                     .enter()
                     .append('g')
-                    .attr('class','model');
-                aircraftNodeEnter.append('line')
-                    .attr('class','pax-range')
-                    .attr('x1', function(d){
-                       return -(paxScale(d.pax[1]- d.pax[0])/2);
+                    .attr('class','model')
+                    .on('mouseenter',function(d){
+                        svg.on('mousemove',null);
+
+                        //range snapping
+                        vent.trigger("planeChart:mouseRange:change", d.range);
+                        updateRange(d.range);
+                        rangeLine.select('line')
+                            .style('stroke','#EE2962');
+                        rangeLine.select('rect')
+                            .style('fill','#EE2962');
+
+
+                        //alert aircraft hover
+                        vent.trigger("planeChart:aircraft:hover", d.shortName);
                     })
-                    .attr('x2', function(d){
-                        return paxScale(d.pax[1]- d.pax[0])/2;
+                    .on('mouseleave',function(d){
+                        svg.on('mousemove',onMouseMove);
+                        rangeLine.select('line')
+                            .style('stroke',null);
+                        rangeLine.select('rect')
+                            .style('fill',null);
+
+
+                        vent.trigger('planeChart:aircraft:out');
                     });
                 aircraftNodeEnter.append('circle')
                     .attr('r',function(d){
                         return paxSizeScale(d.paxTypical)+3;
-                    })
-                    .style('fill',function(d){
-                        return ageColorScale(d.year);
                     });
                 aircraftNodeEnter.append('image')
                     .attr('xlink:href','./assets/img/plane-icon-white.png')
@@ -169,13 +190,48 @@ define([
                     .attr('transform',function(d){
                         return 'translate('+ paxScale(d.paxTypical) +','+ distScale(d.range) + ')';
                     });
+            }
 
+            function onCityPicked(routes,airports,city){
+                aircraftsUsed=[];
+                routes.forEach(function(r){
+                    aircraftsUsed = aircraftsUsed.concat(r.equipment);
+                });
+                aircraftsUsed = _.uniq(aircraftsUsed);
+
+                redraw();
+            }
+
+            function redraw(){
+                svg.selectAll('.model')
+                    .select('circle')
+                    .transition()
+                    .style('fill',null)
+                    .style('fill-opacity',null);
+                svg.selectAll('.model')
+                    .filter(function(d){
+                        return _.contains(aircraftsUsed, d.shortName);
+                    })
+                    .select('circle')
+                    .transition()
+                    .style('fill',function(d){
+                        return ageColorScale(d.year);
+                    })
+                    .style('fill-opacity',1);
+            }
+
+            function onMouseMove(){
+                var range = distScale.invert(d3.mouse(this)[1]);
+                updateRange(range);
+                vent.trigger('planeChart:mouseRange:change',range);
             }
 
             function updateRange(range){
+                console.log(distScale(range));
                 rangeLine
-                    .transition()
-                    .attr('transform','translate(0,'+distScale(range)+')');
+                    .attr('transform','translate(0,'+distScale(range)+')')
+                    .select('rect')
+                    .attr('height',distScale(18000-range));
             }
         }
     });

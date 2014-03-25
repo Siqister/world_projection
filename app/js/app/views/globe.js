@@ -46,6 +46,8 @@ define([
 
     var tooltipTemplate = _.template('<%= name %> (<%= iata %>)<br /><span><%= city%>, <%= country%></span>');
 
+    var angle = 0; //transformation angle of the distance readout
+
 
     //View definition
     var GlobeView = Marionette.ItemView.extend({
@@ -91,7 +93,7 @@ define([
                         });
                     }
                     //update mouseRange
-                    updateMouseRange(d3.mouse(this));
+                    onMouseMove(d3.mouse(this));
                 })
                 .on('mouseout',function(){
                    vent.trigger('airport:out');
@@ -314,27 +316,32 @@ define([
 
             };
 
-            function updateMouseRange(mouse){
+            function onMouseMove(mouse){
                 var dx = mouse[0]-width/ 2,
                     dy = mouse[1]-height/ 2,
-                    a = Math.atan2(dy,dx),
                     r = Math.sqrt(dx*dx + dy*dy),
                     range = r/120*6371;
+                angle = Math.atan2(dy,dx);
 
                 //Announce mouse range change to other modules
                 vent.trigger('mouseRange:change',range);
+                updateRange(range);
+            }
+
+            function updateRange(range){
+                var r = range/6371*120;
 
                 mouseRange
                     .attr('r',r);
                 mousePointer
                     .style('display',null)
-                    .attr('transform','translate('+width/2+','+height/2+')rotate('+ a/Math.PI*180 + ')translate(0'+ r +')');
+                    .attr('transform','translate('+width/2+','+height/2+')rotate('+ angle/Math.PI*180 + ')translate(0'+ r +')');
                 mousePointer.select('text')
                     .attr('text-anchor',function(){
-                        return r/120*6371 < 12000? 'start':'end';
+                        return range < 12000? 'start':'end';
                     })
                     .attr('x',function(){
-                        return r/120*6371 < 12000? 10:-10;
+                        return range < 12000? 10:-10;
                     })
                     .text(function(){
                         return format(range)+'km';
@@ -397,8 +404,33 @@ define([
                     .remove();
             }
 
+            function onAircraftHover(model){
+                mouseRange
+                    .style('stroke','#EE2962')
+                    .style('fill','#EE2962');
+                mousePointer
+                    .select('text')
+                    .style('fill','#EE2962');
+
+                //code to highlight routes
+
+            }
+
+            function onAircraftOut(){
+                mouseRange
+                    .style('stroke',null)
+                    .style('fill',null);
+                mousePointer
+                    .select('text')
+                    .style('fill',null);
+
+            }
+
             vent.on('route:hover', routeHover);
             vent.on('route:out', routeOut);
+            vent.on('planeChart:mouseRange:change',updateRange);
+            vent.on('planeChart:aircraft:hover', onAircraftHover);
+            vent.on('planeChart:aircraft:out', onAircraftOut);
         }
     });
 
