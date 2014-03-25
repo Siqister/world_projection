@@ -204,22 +204,20 @@ define([
 
             function redraw(){
                 svg.selectAll('.model')
+                    .attr('class','model')
                     .select('circle')
                     .transition()
-                    .style('fill',null)
-                    .style('fill-opacity',null)
+                    .style('fill-opacity',null);
                 svg.selectAll('.meta')
                     .remove();
                 var aircraftNodeUsed = svg.selectAll('.model')
                     .filter(function(d){
                         return _.contains(aircraftsUsed, d.shortName);
-                    });
+                    })
+                    .attr('class','model used');
                 aircraftNodeUsed
                     .select('circle')
                     .transition()
-                    .style('fill',function(d){
-                        return ageColorScale(d.year);
-                    })
                     .style('fill-opacity',1);
                 aircraftNodeUsed
                     .append('text')
