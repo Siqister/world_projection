@@ -46,8 +46,9 @@ define([
 
     var tooltipTemplate = _.template('<%= name %> (<%= iata %>)<br /><span><%= city%>, <%= country%></span>');
 
-    var angle = 0; //transformation angle of the distance readout
-
+    var angle = 0, //transformation angle of the distance readout
+        center = 'BOS', //IATA code of current center city
+        route_w_city = []; //route data connected to center
 
     //View definition
     var GlobeView = Marionette.ItemView.extend({
@@ -86,7 +87,10 @@ define([
                         });
                         $('.custom-tooltip').html(tooltipTemplate(pickedCity));
 
+                        //emit event to routeChart
                         vent.trigger('airport:hover', pickedCity.iata);
+
+                        routesHighlight([pickedCity.iata]);
                     }else{
                         $('.custom-tooltip').css({
                             'left':'-9999px'
@@ -96,7 +100,10 @@ define([
                     onMouseMove(d3.mouse(this));
                 })
                 .on('mouseout',function(){
+                    //emit event to route chart
                    vent.trigger('airport:out');
+
+                    routeOut();
                 });
 
             canvas.append('path')
@@ -139,7 +146,7 @@ define([
                         iata: d.iata,
                         lng: d.lng,
                         lat: d.lat,
-                        loc: [d.lng, d.lat]
+                        loc: [+d.lng, +d.lat]
                     }
                 })
                 .defer(d3.csv, './data/routes.csv', function(d){
@@ -205,6 +212,7 @@ define([
             function changeCity(_iata){
                 //city --> iata code
                 console.log("changing to: " + _iata);
+                center = _iata;
                 var city = _.findWhere(airports,{'iata':_iata});
 
                 //validate city
@@ -234,11 +242,11 @@ define([
                 //DOES NOT center globe; DOES NOT clear connected airports or possible routes
                 var cities = [], //array of iata codes for connected airports
                     citiesData = [], //array of full data for connected airports
-                    route_w_city = [],
                     geo = {
                         type:'FeatureCollection',
                         features:[]
                     };
+                route_w_city = [];
 
                 route_w_city = routes.filter(function(r){
                     if(r.origin === center){
@@ -289,7 +297,7 @@ define([
                     .attr('class','airport connected')
                     .attr('cx', function(d){ return (projection([d.lng, d.lat]))[0]; })
                     .attr('cy', function(d){ return (projection([d.lng, d.lat]))[1]; })
-                    .attr('r',3.5)
+                    .attr('r',2.5)
                     .filter(function(d){
                         return d.iata === center;
                     })
@@ -313,6 +321,8 @@ define([
 
                 //Announce routes to other modules
                 vent.trigger('city:picked', route_w_city, airports, center);
+
+                routeOut();
 
             };
 
@@ -364,47 +374,67 @@ define([
                 };
             }
 
-            function routeHover(originIata, destIata){
-                var origin = _.findWhere(airports,{"iata":originIata}),
-                    dest = _.findWhere(airports,{"iata":destIata});
-                var originXY = projection([origin.lng,origin.lat]),
-                    destXY = projection([dest.lng,dest.lat]);
+            function routesHighlight(destIatas, typeFlag){
+
+                var highlightColor;
+                if(typeFlag === "aircraft"){
+                    highlightColor = "#EE2962";
+                }else{
+                    highlightColor = '#03AFEB';
+                }
+
+                //destIatas --> array of airport IATA codes to highlight
+                var origin = _.findWhere(airports,{"iata":center}),
+                    destsXY = [];
+
+                destIatas.forEach(function(_d){
+                    var _dAirport = _.findWhere(airports,{"iata":_d});
+                   destsXY.push( projection(_dAirport.loc) );
+                });
+                var originXY = projection(origin.loc);
 
                 canvas.selectAll('.hover')
                     .attr('class','airport connected')
                     .transition()
-                    .attr('r',3.5);
+                    .style('fill',null)
+                    .attr('r',2.5);
 
                 var hoverAirport = canvas.selectAll('.connected')
-                    .filter(function(d){ return d.iata === destIata; })
+                    .filter(function(d){
+                        return _.contains(destIatas, d.iata);
+                    })
                     .attr('class','airport connected hover')
                     .transition()
+                    .style('fill', highlightColor)
                     .attr('r',6);
 
                 var hoverRoute = canvas.selectAll('.hover-route')
-                    .data([{origin:originXY, dest:destXY}]);
+                    .data(destsXY);
 
                 hoverRoute.enter().insert('line','.airports')
-                    .attr('class','hover-route');
+                    .attr('class','hover-route')
+                    .style('stroke', highlightColor);
 
                 hoverRoute
-                    .attr('x1',function(d){ return d.origin[0];})
-                    .attr('y1',function(d){ return d.origin[1];})
-                    .attr('x2',function(d){ return d.dest[0];})
-                    .attr('y2',function(d){ return d.dest[1];});
+                    .attr('x1',originXY[0])
+                    .attr('y1',originXY[1])
+                    .attr('x2',function(d){ return d[0];})
+                    .attr('y2',function(d){ return d[1];});
             };
 
             function routeOut(){
                 canvas.selectAll('.hover')
                     .attr('class','airport connected')
                     .transition()
-                    .attr('r',3.5);
+                    .style('fill',null)
+                    .attr('r',2.5);
 
                 canvas.selectAll('.hover-route')
                     .remove();
             }
 
             function onAircraftHover(model){
+                console.log(model);
                 mouseRange
                     .style('stroke','#EE2962')
                     .style('fill','#EE2962');
@@ -413,6 +443,14 @@ define([
                     .style('fill','#EE2962');
 
                 //code to highlight routes
+                var dests = [];
+                route_w_city.forEach(function(r){
+                    if(_.contains(r.equipment, model)){
+                        dests.push(r.dest);
+                    }
+                });
+
+                routesHighlight(dests, "aircraft");
 
             }
 
@@ -424,9 +462,10 @@ define([
                     .select('text')
                     .style('fill',null);
 
+                routeOut();
             }
 
-            vent.on('route:hover', routeHover);
+            vent.on('route:hover', routesHighlight);
             vent.on('route:out', routeOut);
             vent.on('planeChart:mouseRange:change',updateRange);
             vent.on('planeChart:aircraft:hover', onAircraftHover);
