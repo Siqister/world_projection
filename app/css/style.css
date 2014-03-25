@@ -108,7 +108,7 @@ span.meta{
 .hover-route{
     fill:none;
     stroke-width:1.5px;
-    stroke:#03afeb;
+    /*stroke:#03afeb;*/
     stroke-opacity:1;
 }
 

@@ -183,7 +183,7 @@ define([
 
                 aircraftNode
                     .attr('transform',function(d){
-                       return 'translate('+ paxScale(d.paxTypical) +','+ distScale(d.range- d.speed) + ')';
+                       return 'translate('+ paxScale(d.paxTypical) +','+ distScale(d.range- d.speed*3) + ')';
                     })
                     .transition()
                     .duration(2000)
@@ -207,17 +207,28 @@ define([
                     .select('circle')
                     .transition()
                     .style('fill',null)
-                    .style('fill-opacity',null);
-                svg.selectAll('.model')
+                    .style('fill-opacity',null)
+                svg.selectAll('.meta')
+                    .remove();
+                var aircraftNodeUsed = svg.selectAll('.model')
                     .filter(function(d){
                         return _.contains(aircraftsUsed, d.shortName);
-                    })
+                    });
+                aircraftNodeUsed
                     .select('circle')
                     .transition()
                     .style('fill',function(d){
                         return ageColorScale(d.year);
                     })
                     .style('fill-opacity',1);
+                aircraftNodeUsed
+                    .append('text')
+                    .text(function(d){
+                        return d.fullName;
+                    })
+                    .attr('text-anchor','middle')
+                    .attr('class','meta')
+                    .attr('y',-15);
             }
 
             function onMouseMove(){
@@ -227,7 +238,6 @@ define([
             }
 
             function updateRange(range){
-                console.log(distScale(range));
                 rangeLine
                     .attr('transform','translate(0,'+distScale(range)+')')
                     .select('rect')

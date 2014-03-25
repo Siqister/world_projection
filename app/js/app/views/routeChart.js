@@ -59,7 +59,7 @@ define([
            this.$('table tr').on('mouseenter',function(e){
                e.stopPropagation();
                var destIata = $(this).attr("id");
-               vent.trigger("route:hover", that.data.iata, destIata);
+               vent.trigger("route:hover", [destIata]);
 
            })
            this.$('table').on('mouseleave', function(e){
