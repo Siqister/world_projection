@@ -2,9 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a0f5c84f-7274-43a1-9f0a-b185968b6f1f" name="Default" comment="plane chart&#10;">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/data/aircrafts.csv" afterPath="$PROJECT_DIR$/app/data/aircrafts.csv" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/js/app/views/planeChart.js" afterPath="$PROJECT_DIR$/app/js/app/views/planeChart.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/js/app/views/routeChart.js" afterPath="$PROJECT_DIR$/app/js/app/views/routeChart.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/css/style.css" afterPath="$PROJECT_DIR$/app/css/style.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -50,7 +47,7 @@
       <file leaf-file-name="style.css" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/css/style.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="110" column="23" selection-start="1715" selection-end="1715" vertical-scroll-proportion="0.0" vertical-offset="1614" max-vertical-offset="3553">
+            <state line="195" column="14" selection-start="3153" selection-end="3153" vertical-scroll-proportion="0.0" vertical-offset="2775" max-vertical-offset="3621">
               <folding />
             </state>
           </provider>
@@ -59,7 +56,7 @@
       <file leaf-file-name="planeChart.js" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/js/app/views/planeChart.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="229" column="41" selection-start="7847" selection-end="7847" vertical-scroll-proportion="0.44402516" vertical-offset="3540" max-vertical-offset="4335">
+            <state line="209" column="0" selection-start="6993" selection-end="6993" vertical-scroll-proportion="3.7157233" vertical-offset="599" max-vertical-offset="4301">
               <folding />
             </state>
           </provider>
@@ -86,7 +83,7 @@
       <file leaf-file-name="globe.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/js/app/views/globe.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="430" column="33" selection-start="15736" selection-end="15739" vertical-scroll-proportion="-10.24" vertical-offset="7054" max-vertical-offset="8245">
+            <state line="430" column="33" selection-start="15736" selection-end="15739" vertical-scroll-proportion="0.0" vertical-offset="7310" max-vertical-offset="8245">
               <folding />
             </state>
           </provider>
@@ -117,16 +114,16 @@
         <option value="$PROJECT_DIR$/app/js/bootstrap.js" />
         <option value="$PROJECT_DIR$/app/index.html" />
         <option value="$PROJECT_DIR$/app/js/app/app.js" />
-        <option value="$PROJECT_DIR$/app/js/app/views/planeChart.js" />
         <option value="$PROJECT_DIR$/app/js/app/views/routeChart.js" />
         <option value="$PROJECT_DIR$/app/js/app/views/globe.js" />
         <option value="$PROJECT_DIR$/app/css/style.css" />
+        <option value="$PROJECT_DIR$/app/js/app/views/planeChart.js" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="70" />
-    <option name="y" value="41" />
+    <option name="x" value="41" />
+    <option name="y" value="56" />
     <option name="width" value="1715" />
     <option name="height" value="929" />
   </component>
@@ -268,13 +265,18 @@
       <created>1395778251694</created>
       <updated>1395778251694</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="plane chart&#10;">
+      <created>1395785182771</created>
+      <updated>1395785182771</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="70" y="41" width="1715" height="929" extended-state="0" />
+    <frame x="41" y="56" width="1715" height="929" extended-state="0" />
     <editor active="true" />
     <layout>
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292978" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -287,12 +289,11 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32831326" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292978" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32831326" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -621,6 +622,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/js/app/views/globe.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="430" column="33" selection-start="15736" selection-end="15739" vertical-scroll-proportion="0.0" vertical-offset="7310" max-vertical-offset="8245">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/js/app/views/routeChart.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="65" column="38" selection-start="2195" selection-end="2204" vertical-scroll-proportion="0.0" vertical-offset="811" max-vertical-offset="1887">
@@ -630,21 +638,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/css/style.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="110" column="23" selection-start="1715" selection-end="1715" vertical-scroll-proportion="0.0" vertical-offset="1614" max-vertical-offset="3553">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/js/app/views/globe.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="430" column="33" selection-start="15736" selection-end="15739" vertical-scroll-proportion="-10.24" vertical-offset="7054" max-vertical-offset="8245">
+        <state line="195" column="14" selection-start="3153" selection-end="3153" vertical-scroll-proportion="0.0" vertical-offset="2775" max-vertical-offset="3621">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/js/app/views/planeChart.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="229" column="41" selection-start="7847" selection-end="7847" vertical-scroll-proportion="0.44402516" vertical-offset="3540" max-vertical-offset="4335">
+        <state line="209" column="0" selection-start="6993" selection-end="6993" vertical-scroll-proportion="3.7157233" vertical-offset="599" max-vertical-offset="4301">
           <folding />
         </state>
       </provider>
