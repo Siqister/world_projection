@@ -5,7 +5,7 @@
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" href="css/jquery-ui-1.10.4.custom.min.css"/>
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/style.css"/>
     <title>Fly Away</title>
 </head>
 <body>
@@ -34,6 +34,7 @@
     <div class="col-left">
         <div class="control">
             <h1>Flying From?</h1>
+
             <div class="input-group">
                 <span class="input-group-addon">City or Airport</span>
                 <input type="text" class="form-control" placeholder="e.g. 'BOS' or 'Boston'">
@@ -52,27 +53,31 @@
     <h2>
         <%= name %> (<%= iata %>)
         <span class="meta"><%=city%>, <%=country%></span>
+        <br/>
+        <span class="meta">Connected to <%=numAirports%> airports in <%=numCities%> cities in <%=numCountries%> countries</span>
     </h2>
 </script>
 
 <script id="table-template" type="text/html">
-    <table class="table table-condensed table-hover">
-        <tr>
-            <th>Destination</th>
-            <th>Distance</th>
-        </tr>
-    </table>
+    <div class="table-container">
+        <table class="table table-condensed table-hover">
+            <tr>
+                <th>Destination</th>
+                <th>Distance</th>
+            </tr>
+        </table>
+    </div>
 </script>
 
 <script id="table-row-template" type="text/html">
-        <td><%= dest %>
-            <span class="meta"><%= destCity %></span>
+    <td><%= dest %>
+        <span class="meta"><%= destCity %></span>
                     <span class="meta">Operated by <%= airline %> using <% _.each(equipment, function(eq){ %>
                         <span class="label label-default"><%= eq %></span>
                     <% }); %>
                     </span>
-        </td>
-        <td><%= distString %></td>
+    </td>
+    <td><%= distString %></td>
 </script>
 
 <!--Scripts-->

@@ -23,11 +23,10 @@ define([
        summaryTemplate: _.template($('#summary-template').html()),
        className:'route-chart-inner',
        initialize: function(options){
-           //perform summary calculations
-           var that = this;
+           var that = this,
+               connectedAirports = []; //array containing data for connected airports
 
            this.data = {};
-           this.summary = {};
 
            this.data.iata = options.city; //origin city, IATA
            this.data.city = _.findWhere(options.airports, {"iata":options.city}); //origin city, full data
@@ -61,8 +60,9 @@ define([
                   console.log("error: " + _r.dest);
                   return;
               }
+              connectedAirports.push(destCity);
 
-              var distanceRad = d3.geo.distance([originCity.lng, originCity.lat],[destCity.lng,destCity.lat]);
+              var distanceRad = d3.geo.distance(originCity.loc,destCity.loc);
 
               _r.destCity = destCity.city + ', ' + destCity.country;
               _r.destFullData = destCity;
@@ -77,6 +77,12 @@ define([
            this.data.routes.sort(function(a,b){
               return b.distance - a.distance;
            });
+
+
+           //calculate summary stats for the airports
+           that.data.city.numAirports = _.pluck(connectedAirports,'iata').length;
+           that.data.city.numCities = _.uniq(_.pluck(connectedAirports,'city')).length;
+           that.data.city.numCountries = _.uniq(_.pluck(connectedAirports,'country')).length;
        },
        render: function(){
            var that = this;
