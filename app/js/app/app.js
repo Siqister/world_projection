@@ -50,10 +50,10 @@ define([
         });
         app.routeChart.show(routeChartView);
 
+        //TODO: not very elegant
         if(init === false){
             //call up modal
             $('.modal').modal('show');
-
             init = true;
         }
     });

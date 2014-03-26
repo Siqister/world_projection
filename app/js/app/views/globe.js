@@ -151,7 +151,7 @@ define([
                 })
                 .defer(d3.csv, './data/routes.csv', function(d){
                     return{
-                        airline: d.airline,
+                        airline: [d.airline],
                         origin: d.origin,
                         dest: d.dest,
                         equipment: d.equipment.split(" ")

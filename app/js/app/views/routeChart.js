@@ -19,6 +19,7 @@ define([
 
     var RouteChartView = Marionette.ItemView.extend({
        tableTemplate: _.template($('#table-template').html()),
+       tableRowTemplate: _.template($('#table-row-template').html()),
        summaryTemplate: _.template($('#summary-template').html()),
        className:'route-chart-inner',
        initialize: function(options){
@@ -28,15 +29,32 @@ define([
            this.data = {};
            this.summary = {};
 
-           this.data.iata = options.city;
-           this.data.city = _.findWhere(options.airports, {"iata":options.city});
-           this.data.airports = options.airports; //list of all airports
+           this.data.iata = options.city; //origin city, IATA
+           this.data.city = _.findWhere(options.airports, {"iata":options.city}); //origin city, full data
+           this.data.airports = options.airports; //all airports, full data
            var originCity = this.data.city;
 
+
            //reduce the list of routes
-           this.data.routes = options.routes.filter(function(_r){
-               return _r.dest !== options.city && _r.codeshare !== "Y";
+           var rawRoutes = options.routes.filter(function(_r){
+               //remove routes ending in origin city
+               return _r.dest !== options.city;
            });
+           //collapse multiple airlines serving same city
+           this.data.routes = [];
+           rawRoutes.forEach(function(_rawRoute){
+               var existingRoute = _.findWhere(that.data.routes,{"dest":_rawRoute.dest});
+               //if no existing route exists
+               if(!existingRoute){
+                   that.data.routes.push(_rawRoute);
+               }else{
+                   //concat airline and equipment
+                   existingRoute.equipment = existingRoute.equipment.concat(_rawRoute.equipment);
+                   existingRoute.airline = existingRoute.airline.concat(_rawRoute.airline);
+               }
+           });
+
+           //calculate distance for each route
            this.data.routes.forEach(function(_r){
               var destCity = _.findWhere(options.airports,{"iata":_r.dest});
               if(!destCity){
@@ -50,26 +68,43 @@ define([
               _r.destFullData = destCity;
               _r.distance = distanceRad * 6371;
               _r.distString = format(_r.distance) + "km";
+              _r.equipment = _.uniq(_r.equipment);
            })
+           //sort routes by distance
+           this.data.routes = _.reject(that.data.routes,function(_r){
+              return !(_r.destCity);
+           });
            this.data.routes.sort(function(a,b){
               return b.distance - a.distance;
            });
-
-           var destCityData = _.pluck(that.data.routes,'destFullData');
        },
        render: function(){
            var that = this;
            this.$el.append(this.summaryTemplate(this.data.city));
            this.$el.append(this.tableTemplate({routes: this.data.routes})).fadeIn();
 
-           //bind events directly to <tr>
-           this.$('table tr').on('mouseenter',function(e){
-               e.stopPropagation();
-               var destIata = $(this).attr("id");
-               vent.trigger("route:hover", [destIata]);
+           //render individual rows
+           d3.select(that.el).select('tbody')
+               .selectAll('.route-row')
+               .data(that.data.routes)
+               .enter()
+               .append('tr')
+               .attr('class','route-row dest-iata')
+               .attr('id',function(d){
+                   return d.dest;
+               })
+               .each(function(d){
+                    $(this).append(that.tableRowTemplate(d));
+               })
+               .on('mouseenter',function(d){
+                   d3.event.stopPropagation();
+                   //TODO: trigger route:out to clear previous
+                   vent.trigger("route:out");
+                   vent.trigger("route:hover",[d.dest], d.equipment);
+               });
 
-           })
-           this.$('table').on('mouseleave', function(e){
+           //bind events directly to <tr>
+           that.$('table').on('mouseleave', function(e){
                vent.trigger("route:out");
            });
        },
@@ -77,6 +112,7 @@ define([
            var that = this,
                airportHover = null;
 
+           //listen to airport hover events emitted from the globe
            vent.off("airport:hover")
                .on("airport:hover", function(destIata){
                    if(airportHover !== destIata){

@@ -227,7 +227,6 @@ define([
                     .attr('text-anchor','middle')
                     .attr('class','meta')
                     .attr('y',-15);
-
             }
 
             function onMouseMove(){
@@ -242,6 +241,22 @@ define([
                     .select('rect')
                     .attr('height',distScale(18000-range));
             }
+
+            vent.on('route:hover',function(dest, equipment){
+                svg.selectAll('.used')
+                    .filter(function(d){
+                        return _.contains(equipment, d.shortName);
+                    })
+                    .attr('class', 'used on-route')
+                    .select('circle')
+                    .style('fill','#03afeb');
+            });
+            vent.on('route:out',function(){
+                svg.selectAll('.on-route')
+                    .attr('class', 'used')
+                    .select('circle')
+                    .style('fill',null);
+            });
         }
     });
 
