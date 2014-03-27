@@ -71,14 +71,19 @@ span.meta{
     position: absolute;
     top: -9999px;
     padding: 5px 8px;
-    background: #222;
+    background: #03afeb;
     color: #fff;
     font-weight:bold;
+    max-width: 350px;
 }
 .custom-tooltip span{
     font-size: 0.8em;
     font-weight:normal;
 }
+.custom-tooltip.aircraft{
+     background: #EE2962;
+ }
+
 
 /*SVG drawing styling*/
 .graticule {
@@ -121,7 +126,8 @@ span.meta{
     fill-opacity: 0.1;
 }
 .connected{
-    fill: #f15a29;
+    /*fill: #f15a29;*/
+    fill: #222;
     fill-opacity: 0.7;
     cursor:pointer;
 }
@@ -192,6 +198,9 @@ svg text.meta,
     fill:#222;
 }
 .model:hover circle{
+    fill:#EE2962;
+}
+.model:hover text{
     fill:#EE2962;
 }
 .model .pax-range{

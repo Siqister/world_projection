@@ -126,7 +126,7 @@ define([
 
                        var $highlight = that.$('table').find('#'+destIata).first();
 
-                       that.scrollTo($highlight.offset().top - that.$el.offset().top);
+                       that.scrollTo($highlight.offset().top - that.$('table').offset().top);
                        $highlight.addClass('airport-hover');
 
                    }else{
@@ -142,7 +142,7 @@ define([
        scrollTo: function(offset){
            var that = this;
            //not really legal
-           $('.route-chart')
+           $('.route-chart .table-container')
                .stop()
                .animate({
                     scrollTop: offset

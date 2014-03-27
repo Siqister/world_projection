@@ -32,6 +32,8 @@ define([
         paxSizeScale = d3.scale.threshold().domain([100,180,280]).range([3,5,7,9]),
         ageColorScale = d3.scale.threshold().domain([1960,1970,1980,1990,2000]).range(['#4D7A9D','#B6D5ED','#C2E5F9','#FCD4E3','#F48BA0','#EE2971']);
 
+    var tooltipTemplate = _.template('<%= company %> <%= fullName %><br /><span>Introduced in <%= year %></span><br/><span><%= desc %></span>');
+
     var PlaneChartView = Marionette.ItemView.extend({
         className:"plane-chart-inner",
         initialize: function(){
@@ -117,7 +119,8 @@ define([
                     pax: [+d.pax_min, +d.pax_max],
                     paxTypical: ((+d.pax_min)+(+d.pax_max))/2,
                     speed: +d.speed,
-                    year: +d.year//new Date(+d.year,+d.month)
+                    year: +d.year,//new Date(+d.year,+d.month)
+                    desc: d.desc? d.desc:"..."
                 };
             },dataLoaded);
 
@@ -148,9 +151,19 @@ define([
                         rangeLine.select('rect')
                             .style('fill','#EE2962');
 
-
                         //alert aircraft hover
                         vent.trigger("planeChart:aircraft:hover", d.shortName);
+
+                        //tooltip
+                        $('.custom-tooltip').html(tooltipTemplate(d));
+                        $('.custom-tooltip').addClass('aircraft');
+                        var tooltipWidth = $('.custom-tooltip').width();
+                        $('.custom-tooltip').css({
+                            'left':d3.event.x - tooltipWidth - 20 + 'px',
+                            'top':d3.event.y + 10 + 'px'
+                        });
+
+
                     })
                     .on('mouseleave',function(d){
                         svg.on('mousemove',onMouseMove);
@@ -159,8 +172,12 @@ define([
                         rangeLine.select('rect')
                             .style('fill',null);
 
-
                         vent.trigger('planeChart:aircraft:out');
+
+                        $('.custom-tooltip').removeClass('aircraft');
+                        $('.custom-tooltip').css({
+                            'left':'-9999px'
+                        });
                     });
                 aircraftNodeEnter.append('circle')
                     .attr('r',function(d){
@@ -222,7 +239,7 @@ define([
                 aircraftNodeUsed
                     .append('text')
                     .text(function(d){
-                        return d.fullName;
+                        return d.shortName;
                     })
                     .attr('text-anchor','middle')
                     .attr('class','meta')
@@ -243,18 +260,26 @@ define([
             }
 
             vent.on('route:hover',function(dest, equipment){
-                svg.selectAll('.used')
+                var aircraftOnRoute = svg.selectAll('.used')
                     .filter(function(d){
                         return _.contains(equipment, d.shortName);
                     })
-                    .attr('class', 'used on-route')
+                    .attr('class', 'model used on-route');
+                aircraftOnRoute
                     .select('circle')
+                    .style('fill','#03afeb');
+                aircraftOnRoute
+                    .select('text')
                     .style('fill','#03afeb');
             });
             vent.on('route:out',function(){
-                svg.selectAll('.on-route')
-                    .attr('class', 'used')
+                var aircraftOnRoute =  svg.selectAll('.on-route')
+                    .attr('class', 'model used');
+                aircraftOnRoute
                     .select('circle')
+                    .style('fill',null);
+                aircraftOnRoute
+                    .select('text')
                     .style('fill',null);
             });
         }
