@@ -206,6 +206,9 @@ svg text.meta,
 .model:hover text{
     fill:#EE2962;
 }
+.model text{
+    fill-opacity:.5;
+}
 .model .pax-range{
     stroke-width:3px;
     stroke-opacity:0.1;
