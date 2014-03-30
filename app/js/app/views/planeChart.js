@@ -222,7 +222,7 @@ define([
                     });
                 aircraftNodeEnter.append('circle')
                     .attr('r',function(d){
-                        return paxSizeScale(d.paxTypical)+3;
+                        return paxSizeScale(d.paxTypical)+2;
                     });
                 aircraftNodeEnter.append('image')
                     .attr('xlink:href','./assets/img/plane-icon-white.png')
@@ -284,7 +284,7 @@ define([
                     })
                     .attr('text-anchor','middle')
                     .attr('class','meta')
-                    .attr('y',-15);
+                    .attr('y',-13);
             }
 
             function onMouseMove(){
