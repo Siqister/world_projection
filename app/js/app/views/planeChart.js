@@ -53,7 +53,7 @@ define([
                 .attr('height',height+margin.t+margin.b)
                 .append('g')
                 .attr('transform','translate('+margin.l+','+margin.t+')');
-
+            //Mouse interaction target
             svg.append('rect')
                 .attr('class','mouse-target')
                 .attr('x',0)
@@ -62,6 +62,11 @@ define([
                 .attr('height',height)
                 .style('fill-opacity',0);
 
+
+            //Range ticks
+            svg.append('text')
+                .text('Range')
+                .attr('transform','rotate(-90)translate(-50,10)');
             var rangeTicks = svg.selectAll('.range-tick')
                 .data([0,2500,5000,7500,10000,12500,15000])
                 .enter()
@@ -87,6 +92,40 @@ define([
                 .text(function(d){ return d + 'km'; });
 
 
+            //draw ticks for passenger capcity
+            var paxLegend = svg.append('g')
+                .attr('class','legend pax')
+                .attr('transform','translate(0,'+ height +')');
+
+            paxLegend.append('text')
+                .attr('text-anchor','middle')
+                .attr('x',width/2)
+                .attr('y', 35)
+                .text('Pax Capacity');
+
+            var paxTicks = paxLegend
+                .selectAll('.pax-tick')
+                .data([100,200,300,400,500])
+                .enter()
+                .append('g')
+                .attr('class','pax-tick')
+                .attr('transform',function(d){
+                    return 'translate('+ paxScale(+d) +')';
+                });
+            paxTicks.append('text')
+                .text(function(d){
+                    return d;
+                })
+                .attr('text-anchor','middle')
+                .attr('dy',18);
+            paxTicks.append('line')
+                .attr('x1',0)
+                .attr('x2',0)
+                .attr('y1',0)
+                .attr('y2',5);
+
+
+            //Moving mouse target
             var rangeLine = svg.append('g')
                 .attr('class','range-line');
             rangeLine.append('rect')
@@ -100,6 +139,7 @@ define([
                 .attr('x2',width)
                 .attr('y2',0)
                 .attr('class','mouse-range');
+
 
 
             svg.on('mousemove', onMouseMove);
@@ -120,7 +160,7 @@ define([
                     paxTypical: ((+d.pax_min)+(+d.pax_max))/2,
                     speed: +d.speed,
                     year: +d.year,//new Date(+d.year,+d.month)
-                    desc: d.desc? d.desc:"..."
+                    desc: d.desc? d.desc:""
                 };
             },dataLoaded);
 
@@ -129,6 +169,7 @@ define([
 
                 drawChart();
 
+                //TODO: creates race condition with globeView
                 vent.on("city:picked",onCityPicked);
             }
 
