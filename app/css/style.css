@@ -194,13 +194,14 @@ svg text.meta,
 
 .model circle{
     fill:#ddd;
-    fill-opacity:0.2;
+    fill-opacity:0;
 }
 .model.used circle{
     fill:#222;
 }
 .model:hover circle{
     fill:#EE2962;
+    fill-opacity:1;
 }
 .model:hover text{
     fill:#EE2962;

@@ -261,22 +261,22 @@ define([
             }
 
             function redraw(){
-                svg.selectAll('.model')
-                    .attr('class','model')
-                    .select('circle')
-                    .transition()
-                    .style('fill-opacity',null);
+                var aircraftNodeOut = svg.selectAll('.model')
+                    .attr('class','model');
+                aircraftNodeOut
+                    .select('image')
+                    .attr('xlink:href','./assets/img/plane-icon-white.png');
                 svg.selectAll('.meta')
                     .remove();
+
                 var aircraftNodeUsed = svg.selectAll('.model')
                     .filter(function(d){
                         return _.contains(aircraftsUsed, d.shortName);
                     })
                     .attr('class','model used');
                 aircraftNodeUsed
-                    .select('circle')
-                    .transition()
-                    .style('fill-opacity',1);
+                    .select('image')
+                    .attr('xlink:href','./assets/img/plane-icon.png');
                 aircraftNodeUsed
                     .append('text')
                     .text(function(d){
@@ -308,7 +308,8 @@ define([
                     .attr('class', 'model used on-route');
                 aircraftOnRoute
                     .select('circle')
-                    .style('fill','#03afeb');
+                    .style('fill','#03afeb')
+                    .style('fill-opacity',1);
                 aircraftOnRoute
                     .select('text')
                     .style('fill','#03afeb');
@@ -318,7 +319,8 @@ define([
                     .attr('class', 'model used');
                 aircraftOnRoute
                     .select('circle')
-                    .style('fill',null);
+                    .style('fill',null)
+                    .style('fill-opacity',null);
                 aircraftOnRoute
                     .select('text')
                     .style('fill',null);
